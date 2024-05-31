@@ -1,19 +1,20 @@
 import { ActionReducerMapBuilder } from "@reduxjs/toolkit";
 import { loadMyAccountData } from "../thunks";
+import { AccountState } from "../initialState";
 
 export const loadMyAccountDataBuilder = (
     builder: ActionReducerMapBuilder<any>,
 ) => {
     builder
-        .addCase(loadMyAccountData.pending, (state) => {
+        .addCase(loadMyAccountData.fulfilled, (state: AccountState, action) => {
+            state.status = 'succeeded';
+            state.account = action.payload;
+        })
+        .addCase(loadMyAccountData.pending, (state: AccountState) => {
             state.status = 'loading';
             state.error = null;
         })
-        .addCase(loadMyAccountData.fulfilled, (state, action) => {
-            state.status = 'succeeded';
-            state.data = action.payload;
-        })
-        .addCase(loadMyAccountData.rejected, (state, action) => {
+        .addCase(loadMyAccountData.rejected, (state: AccountState, action) => {
             state.status = 'failed';
             state.error = action.payload || action.error.message;
         });

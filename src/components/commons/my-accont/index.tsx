@@ -1,8 +1,11 @@
 import React, { useEffect } from 'react';
 import { View, Text, Button, ActivityIndicator, StyleSheet } from 'react-native';
-import { useAppDispatch } from '../../../../store/hooks/useAppDispatch';
-import { useAppSelector } from '../../../../store/hooks/useAppSelector';
-import { loadMyAccountData } from '../../../../store/account/thunks';
+import { useAppDispatch } from '../../../store/hooks/useAppDispatch';
+import { useAppSelector } from '../../../store/hooks/useAppSelector';
+import { loadMyAccountData } from '../../../store/account/thunks';
+import { LinearGradient } from 'expo-linear-gradient';
+import { themeColors } from '../../../theme/colors';
+import { styles } from './style';
 
 const MyAccount = () => {
     const dispatch = useAppDispatch();
@@ -35,27 +38,29 @@ const MyAccount = () => {
     }
 
     return (
-        <View style={styles.container}>
+        <>
             {status === 'succeeded' && account ? (
-                <Text>{JSON.stringify(account, null, 2)}</Text>
+                <>
+                    <LinearGradient
+                        colors={[themeColors.primary, themeColors.secondary]}
+                        style={[styles.background, { height: 300 }]}
+                    />
+                    <View>
+                        <View className="flex flex-row justify-between items-center">
+                            <Text style={styles.color} className="font-medium text-md mt-2">conta</Text>
+                            <Text style={styles.color} className="font-medium text-md">ver extrato</Text>
+                        </View>
+                        <View>
+                            <Text style={styles.color} className="font-extralight text-xl">Saldo disponível</Text>
+                            <Text style={styles.color} className="font-extralight text-4xl mt-2">R$ {account.balance}</Text>
+                        </View>
+                    </View>
+                </>
             ) : (
                 <Text>No data available</Text>
             )}
-        </View>
+        </>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    centered: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-});
 
 export default MyAccount;

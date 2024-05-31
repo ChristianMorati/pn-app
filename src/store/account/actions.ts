@@ -1,5 +1,5 @@
 import { accountReducer } from "./slice";
 
 export const {
-    reset,
+    withdraw,
 } = accountReducer.actions;

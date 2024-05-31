@@ -6,23 +6,21 @@ export type PixKey = {
 }
 
 export type AccountItem = {
-    balance: number
+    id: number;
+    balance: number;
     pixKeys?: PixKey[];
 };
 
 export interface AccountState {
     account: AccountItem,
-    pixKeys: undefined, // Initialize as undefined to avoid potential errors
-    error: null,
+    pixKeys: undefined,
+    error: any,
     status: string | null;
 }
 
 export const initialState: AccountState = {
-    account: {
-        balance: 0,
-        pixKeys: [],
-    },
-    pixKeys: undefined, // Initialize as undefined to avoid potential errors
+    account: {} as AccountItem,
+    pixKeys: undefined,
     error: null,
     status: null
 };

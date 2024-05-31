@@ -1,9 +1,9 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { AccountItem, initialState } from './initialState'
-import { loadMyAccountDataBuilder } from './builder/loadMyAccountDataBuilder';
+import { createSlice } from '@reduxjs/toolkit';
+import { initialState } from './initialState'
+import { createTransactionBuilder } from './builder/createTransactionBuilder';
 
-export const accountReducer = createSlice({
-    name: 'account',
+export const transactionReducer = createSlice({
+    name: 'transaction',
     initialState,
     reducers: {
         // increment(state) {
@@ -16,7 +16,7 @@ export const accountReducer = createSlice({
         // },
     },
     extraReducers: (builder) => {
-        loadMyAccountDataBuilder(builder)
+        createTransactionBuilder(builder)
         // builder.addCase('resetCartSlice', (state, action) => {
         //     return initialState;
         // })

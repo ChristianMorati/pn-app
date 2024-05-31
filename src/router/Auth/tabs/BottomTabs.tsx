@@ -4,7 +4,7 @@ import { Image } from "react-native";
 import ProductStack from "../stacks/ProductsStack";
 import { Tab } from "../..";
 import { Text } from "react-native";
-import { useAppSelector } from "../../../../store/hooks/useAppSelector";
+import { useAppSelector } from "../../../store/hooks/useAppSelector";
 import useDeviceTheme from "../../../theme/use-theme";
 
 export default function BottomTabs() {

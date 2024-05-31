@@ -1,14 +1,11 @@
-import { StyleSheet } from "react-native";
-import colors from "tailwindcss/colors"
+import { Dimensions, StyleSheet } from "react-native";
 import { themeColors } from "../../theme/colors";
+
+const height = Dimensions.get('window').height
 
 export const styles = StyleSheet.create({
     container: {
-        height: '100%',
-        marginTop: 30,
-        paddingTop: 8,
         gap: 8,
-        backgroundColor: themeColors.basePage
     },
     color: {
         color: '#fff'

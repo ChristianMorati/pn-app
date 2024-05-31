@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { ReactNode } from "react";
 import { StyleProps } from "react-native-reanimated";
+import { themeColors } from "../../../theme/colors";
 
 interface BasePageProps extends ViewProps {
     children?: ReactNode;
@@ -17,13 +18,13 @@ interface BasePageProps extends ViewProps {
 
 export function BasePage({ children, style, nativeViewProps }: BasePageProps) {
     return (
-        <SafeAreaView>
-            <ScrollView>
-                <View style={[{ flex: 1, justifyContent: "center", gap: 10, ...style }]} {...nativeViewProps}>
+        <View style={[{ justifyContent: "flex-start", paddingTop: 40, gap: 10, height: '100%', backgroundColor: themeColors.basePage, ...style }]} {...nativeViewProps}>
+            <SafeAreaView>
+                <ScrollView>
                     {children}
-                </View>
-                <ScapeFromBottomTab />
-            </ScrollView>
-        </SafeAreaView>
+                    <ScapeFromBottomTab />
+                </ScrollView>
+            </SafeAreaView>
+        </View>
     );
 }

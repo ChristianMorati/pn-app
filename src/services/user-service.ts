@@ -1,23 +1,19 @@
-import axios from "axios";
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import AsyncStorage from "@react-native-async-storage/async-storage"
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { httpClient } from "./http-client";
 
-const instance = axios.create({
-    baseURL: 'http://192.168.1.41:3000',
-    timeout: 5000,
-    headers: {
-        'Content-Type': 'application/json',
-    },
-});
+type findUserByPixKeyParams = {
+    pixKey: string
+}
 
-export const loadMyAccountData = createAsyncThunk(
-    'account/loadMyAccountData',
-    async () => {
+
+class UserService {
+    async findUserByPixKey({ pixKey }: findUserByPixKeyParams) {
         try {
             const token = await AsyncStorage.getItem('TOKEN');
             // const userId = await AsyncStorage.getItem('@user');
-            const userId = 1;
-            const response = await instance.get(`account/${userId}`, {
+            const pixKey = ""
+            const response = await httpClient.request(`user/pixKey/${pixKey}`, {
+                method: 'GET',
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -35,4 +31,7 @@ export const loadMyAccountData = createAsyncThunk(
             return Promise.reject(error);
         }
     }
-);
+}
+
+const userService = new UserService();
+export { userService }

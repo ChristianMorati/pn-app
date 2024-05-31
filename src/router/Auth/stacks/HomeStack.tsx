@@ -1,33 +1,41 @@
 import React from "react";
-import { Stack } from "../.."; 
-import useDeviceTheme from "../../../theme/use-theme";
-import { HomeScreen } from "../../../pages/home";
-import { PurchaseHistoryScreen } from "../../../screens";
+import HomeScreen from "../../../pages/home";
+
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Text, View } from "react-native";
+const Stack = createNativeStackNavigator();
+
+function TransactionScreen() {
+    return (
+        <View>
+            <Text>TransactionScreen</Text>
+        </View>
+    )
+}
 
 export default function HomeStack() {
-    const { theme } = useDeviceTheme()
     return (
         <Stack.Navigator
-            initialRouteName="Home"
+            initialRouteName="transaction"
             screenOptions={{
-                headerTintColor: theme.titleColor,
-                headerStyle: {
-                    backgroundColor: theme.pageBackgroundColor,
-                }
+                // headerTintColor: theme.titleColor,
+                // headerStyle: {
+                //     backgroundColor: theme.pageBackgroundColor,
+                // }
             }}
         >
             <Stack.Screen
-                name="Home"
-                component={HomeScreen}
+                name="transaction"
+                component={TransactionScreen}
                 options={{
                     headerShown: false
                 }}
             />
             <Stack.Screen
-                name="PurchaseHystory"
-                component={PurchaseHistoryScreen}
+                name="/"
+                component={HomeScreen}
                 options={{
-                    headerTitle: "Histórico de Compras"
+                    headerShown: false
                 }}
             />
         </Stack.Navigator>

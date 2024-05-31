@@ -1,16 +1,16 @@
-import { StatusBar } from 'expo-status-bar';
-import { View } from 'react-native';
-import HomeScreen from './src/pages/home';
+import * as React from 'react';
 import { Provider } from 'react-redux';
-import { store } from './store';
+import { store } from './src/store';
+import { RootNavigator } from './src/router/RootNavigator';
+import ExpoStatusBar from 'expo-status-bar/build/ExpoStatusBar';
 
-export default function App() {
+function App() {
   return (
-    <View>
-      <Provider store={store}>
-        <HomeScreen />
-      </Provider>
-      <StatusBar style="auto" />
-    </View>
+    <Provider store={store}>
+      <RootNavigator />
+      <ExpoStatusBar backgroundColor={"black"}/>
+    </Provider>
   );
 }
+
+export default App;

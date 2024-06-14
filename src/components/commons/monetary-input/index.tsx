@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Text, StyleSheet } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
 import { themeColors } from '../../../theme/colors';
-import colors from 'tailwindcss/colors';
 
 export const MoneyTextInput = ({ value, onChangeText, validateMoneyInput, inputMoneyError }:
     {

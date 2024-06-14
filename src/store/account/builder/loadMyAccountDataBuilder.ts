@@ -16,6 +16,6 @@ export const loadMyAccountDataBuilder = (
         })
         .addCase(loadMyAccountData.rejected, (state: AccountState, action) => {
             state.status = 'failed';
-            state.error = action.payload || action.error.message;
+            state.error = action.error.message;
         });
 }

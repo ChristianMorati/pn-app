@@ -1,40 +1,83 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AuthRouter from "./Auth/AuthRouter";
-import NonAuthRouter from "./nonAuth/NonAuthRouter";
-
-
+import LoginScreen from "../pages/login";
+import { ActivityIndicator, View, StyleSheet } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setSignedIn, setUserInfo } from "../store/user/actions";
+import { useAppSelector } from "../store/hooks/useAppSelector";
+import { useAppDispatch } from "../store/hooks/useAppDispatch";
+import { checkAccessTokenValidation, updateTokens } from "../services/jwt";
+import { themeColors } from "../theme/colors";
 
 export const RootNavigator = () => {
-    // const { user, setUser } = useContext(AuthenticatedUserContext);
     const [isLoading, setIsLoading] = useState(true);
+    const { signedIn } = useAppSelector(store => store.user);
+    const dispatch = useAppDispatch();
 
-    // useEffect(() => {
-    //     // onAuthStateChanged returns an unsubscriber
-    //     let userFromDB;
-    //     const unsubscribeAuthStateChanged = onAuthStateChanged(
-    //         auth,
-    //         async (authenticatedUser) => {
-    //             if (authenticatedUser) {
-    //                 const userRef = doc(db, "users", auth.currentUser.uid);
-    //                 const userSnapshot = await getDoc(userRef)
-    //                 userFromDB = userSnapshot.data();
-    //             }
-    //             authenticatedUser ? setUser({ ...authenticatedUser, ...userFromDB }) : setUser(null);
-    //             setIsLoading(false);
-    //         }
-    //     );
+    const checkIfIsAuthtenticated = async () => {
+        try {
+            const user = await AsyncStorage.getItem("@User");
+            if (!user) {
+                throw new Error("Sem dados de Usuário");
+            }
 
-    //     // unsubscribe auth listener on unmount
-    //     return unsubscribeAuthStateChanged;
-    // }, [user]);
+            const userData = JSON.parse(user);
+            if (!userData.access_token) {
+                throw new Error("Acces token não encontrado");
+            }
 
-    // if (isLoading) {
-    //     return <ActivityIndicator />;
-    // }
+            const tokens = {
+                access_token: userData.access_token,
+                refresh_token: userData.refresh_token,
+            }
+
+            const updatedTokens = await updateTokens(tokens);
+            if (!updatedTokens) {
+                throw new Error("falha ao atualizar tokens");
+            }
+
+            setUserInfo(userData);
+            dispatch(setSignedIn(true));
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        checkIfIsAuthtenticated();
+    }, []);
+
+    if (isLoading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={themeColors.success} />
+            </View>
+        );
+    }
 
     return (
         <>
-            <AuthRouter />
+            {isLoading ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color={themeColors.success} />
+                </View>
+            ) : (
+                <>
+                    {signedIn ? <AuthRouter /> : <LoginScreen />}
+                </>
+            )}
         </>
     );
 };
+
+const styles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+});
+
+export default RootNavigator;

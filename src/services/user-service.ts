@@ -1,33 +1,23 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { httpClient } from "./http-client";
 
-type findUserByPixKeyParams = {
-    pixKey: string
-}
-
-
 class UserService {
-    async findUserByPixKey({ pixKey }: findUserByPixKeyParams) {
+    async findUserByPixKey(pixKey: string) {
         try {
             const token = await AsyncStorage.getItem('TOKEN');
             // const userId = await AsyncStorage.getItem('@user');
-            const pixKey = ""
-            const response = await httpClient.request(`user/pixKey/${pixKey}`, {
-                method: 'GET',
+            const { userName } = await httpClient.request(`user/pixKey/${pixKey}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
 
-            if (!response.data) {
+            if (!userName) {
                 throw new Error('Failed to load user data');
             }
 
-            console.log(response.data)
-
-            return response.data;
+            return userName;
         } catch (error) {
-            console.log('error')
             return Promise.reject(error);
         }
     }

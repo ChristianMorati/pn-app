@@ -9,35 +9,65 @@ type createTransactionParams = {
 
 export const createTransaction = createAsyncThunk(
     'transaction/create',
-    async ({ amount, payeePixKey }: createTransactionParams) => {
+    async ({ amount, payeePixKey }: createTransactionParams, { rejectWithValue }) => {
         try {
             const token = await AsyncStorage.getItem('TOKEN');
-            const user = await AsyncStorage.getItem('@user');
-            payeePixKey = payeePixKey || "chris2@gmail.com";
-            const userId = 3;
+            if (!token) {
+                throw new Error('Token not found');
+            }
 
-            const response = await httpClient.request(`transaction/${userId}`, {
+            const user = await AsyncStorage.getItem('@User');
+            if (!user) {
+                throw new Error('User data not found');
+            }
+
+            const userData = JSON.parse(user);
+
+            const response = await httpClient.request(`transaction`, {
                 method: "POST",
-                body: {
+                body: JSON.stringify({
                     amount: amount,
-                    payerUserId: userId,
+                    payerUserId: userData.user.id,
                     payeePixKey
-                },
+                }),
                 headers: {
+                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
             });
 
-            if (!response.data) {
+            if (!response.success) {
+                throw new Error('Failed to create transaction');
+            }
+
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const loadMyTransactions = createAsyncThunk(
+    'transaction/allByAccountId',
+    async (_, { getState }) => {
+        const { account } = getState().account;
+
+        try {
+            const token = await AsyncStorage.getItem('TOKEN');
+            const response = await httpClient.request(`transaction/all/${account.id}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response) {
                 throw new Error('Failed to load user data');
             }
 
-            console.log(response.data);
-
-            return response.data;
+            return response;
         } catch (error) {
-            console.error('Error:', error);
-            return Promise.reject(error);
+            return Promise.reject({ message: "Aconteceu algum erro" });
         }
     }
 );

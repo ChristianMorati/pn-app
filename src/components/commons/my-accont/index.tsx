@@ -1,38 +1,32 @@
-import React, { useEffect } from 'react';
-import { View, Text, Button, ActivityIndicator, StyleSheet } from 'react-native';
-import { useAppDispatch } from '../../../store/hooks/useAppDispatch';
-import { useAppSelector } from '../../../store/hooks/useAppSelector';
-import { loadMyAccountData } from '../../../store/account/thunks';
+import React from 'react';
+import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { themeColors } from '../../../theme/colors';
 import { styles } from './style';
+import { MaterialIcons } from '@expo/vector-icons';
+import { AccountItem } from '../../../store/account/initialState';
+import { formatToCurrencyBRL } from '../../../utils';
 
-const MyAccount = () => {
-    const dispatch = useAppDispatch();
-    const { status, error, account } = useAppSelector((store) => store.account);
+export type MyAccountProps = {
+    account: AccountItem
+    status: string
+    error: string
+    handleReload: any
+    navigation: any
+}
 
-    useEffect(() => {
-        dispatch(loadMyAccountData());
-    }, [dispatch]);
-
-    const handleReload = () => {
-        dispatch(loadMyAccountData());
-    };
-
+export default function MyAccount({ account, status, error, handleReload, navigation }: MyAccountProps) {
     if (status === 'loading') {
-        return (
-            <>
-                <ActivityIndicator size="large" color="#0000ff" />
-                <Button title="Reload" onPress={handleReload} />
-            </>
-        )
+        return (<ActivityIndicator size="large" color={themeColors.success} />)
     }
 
-    if (status === 'failed' || status === 'loading') {
+    if (status === 'failed') {
         return (
-            <View style={styles.centered}>
-                <Text>Failed to load account data: {error}</Text>
-                <Button title="Reload" onPress={handleReload} />
+            <View style={{ flex: 1, height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: themeColors.primary }}>
+                <Text className="text-lg" style={{ color: themeColors.error }}>{error}</Text>
+                <TouchableOpacity className="p-4 rounded-lg m-2" style={{ backgroundColor: themeColors.error }} onPress={handleReload}>
+                    <Text className="font-bold uppercase" style={{ color: themeColors.color }}>Tentar novamente</Text>
+                </TouchableOpacity>
             </View>
         );
     }
@@ -47,12 +41,18 @@ const MyAccount = () => {
                     />
                     <View>
                         <View className="flex flex-row justify-between items-center">
-                            <Text style={styles.color} className="font-medium text-md mt-2">conta</Text>
-                            <Text style={styles.color} className="font-medium text-md">ver extrato</Text>
+                            <Text style={{ color: themeColors.color }} className="font-medium text-md">conta</Text>
+                            <TouchableOpacity
+                                className="flex flex-row justify-center items-center"
+                                onPress={() => { navigation.navigate("MyTransactions") }}
+                            >
+                                <Text style={{ color: themeColors.color }} className="font-medium text-md">ver extrato</Text>
+                                <Text><MaterialIcons name="arrow-forward-ios" size={14} color={themeColors.color} /></Text>
+                            </TouchableOpacity>
                         </View>
                         <View>
-                            <Text style={styles.color} className="font-extralight text-xl">Saldo disponível</Text>
-                            <Text style={styles.color} className="font-extralight text-4xl mt-2">R$ {account.balance}</Text>
+                            <Text style={{ color: themeColors.color }} className="font-extralight text-xl">Saldo disponível</Text>
+                            <Text style={{ color: themeColors.success }} className="font-extralight text-4xl mt-2">{formatToCurrencyBRL(account.balance)}</Text>
                         </View>
                     </View>
                 </>
@@ -62,5 +62,3 @@ const MyAccount = () => {
         </>
     );
 };
-
-export default MyAccount;

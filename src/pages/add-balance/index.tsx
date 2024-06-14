@@ -1,17 +1,29 @@
-import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { MoneyTextInput } from "../../components/commons/monetary-input";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { LinearGradient } from 'expo-linear-gradient';
 import { themeColors } from "../../theme/colors";
-import { LinearGradient } from "expo-linear-gradient";
 import { BasePage } from "../../components/layout/base-page";
+import { MoneyTextInput } from "../../components/commons/monetary-input";
+import { addBalanceToMyAccount } from "../../store/account/thunks";
+import { useAppDispatch } from "../../store/hooks/useAppDispatch";
+import { useAppSelector } from "../../store/hooks/useAppSelector";
 
 export default function AddBalanceScreen({ navigation }) {
     const [money, setMoney] = useState('');
     const [inputMoneyError, setInputMoneyError] = useState('');
     const [isReady, setIsReady] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const dispatch = useAppDispatch();
+    const { statusAddingAmountToBalance, statusAddingAmountToBalanceLoading } = useAppSelector(store => store.account);
 
     const validateMoneyInput = (text: string) => {
-        const amount = parseFloat(text.trim().replace('R$', '').replace(',', '.'));
+        const formattedAmount = text.trim()
+            .replace('R$', '')
+            .replace(/\./g, '')
+            .replace(',', '.');
+        const amount = parseFloat(formattedAmount);
+
         if (amount < 0.5) {
             setInputMoneyError('Valor abaixo do mínimo: 0,50');
             setIsReady(false);
@@ -21,42 +33,79 @@ export default function AddBalanceScreen({ navigation }) {
         }
     };
 
+    const handleAddAmountToBalance = () => {
+        setLoading(true);
+
+        const formattedAmount = money.trim()
+            .replace('R$', '')
+            .replace(/\./g, '')
+            .replace(',', '.');
+        const amount = parseFloat(formattedAmount);
+
+        try {
+            dispatch(addBalanceToMyAccount(amount));
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        // Resetar o estado de isReady e inputMoneyError quando o componente montar
+        setIsReady(false);
+        setInputMoneyError('');
+    }, []);
+
     return (
-        <BasePage children={
-            <>
-                <ScrollView style={{ backgroundColor: themeColors.basePage }}>
-                    <View style={styles.container}>
-                        <View className="p-4 overflow-hidden mx-2 rounded-lg">
-                            <LinearGradient
-                                colors={[themeColors.primary, themeColors.secondary]}
-                                style={[styles.background, { height: 200 }]}
-                            />
-                            <Text className="text-2xl font-thin text-white">Quanto iremos adicionar</Text>
-                            <MoneyTextInput
-                                value={money} onChangeText={setMoney}
-                                validateMoneyInput={validateMoneyInput}
-                                inputMoneyError={inputMoneyError}
-                            />
-                            {isReady && (
-                                <>
-                                    <View>
-                                        <TouchableOpacity
-                                            className="bg-red-300 p-4 rounded-md"
-                                            onPress={() => {
-                                                console.log("boomm")
-                                            }}
-                                        >
-                                            <Text className="text-xl text-center font-bold text-white uppercase">Gerar pagamento</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </>
-                            )}
-                        </View>
-                    </View >
-                </ScrollView >
-            </>}
-        />
-    )
+        <BasePage>
+            <ScrollView style={{ backgroundColor: themeColors.basePage }}>
+                <View style={styles.container}>
+                    <View className="p-4 overflow-hidden mx-2 rounded-lg">
+                        <LinearGradient
+                            colors={[themeColors.primary, themeColors.secondary]}
+                            style={[styles.background, { height: 200 }]}
+                        />
+                        <Text className="text-2xl font-thin text-white">Quanto iremos adicionar</Text>
+                        <MoneyTextInput
+                            value={money}
+                            onChangeText={setMoney}
+                            validateMoneyInput={validateMoneyInput}
+                            inputMoneyError={inputMoneyError}
+                        />
+                        {isReady && (
+                            <TouchableOpacity
+                                className="bg-red-300 p-4 rounded-md"
+                                onPress={handleAddAmountToBalance}
+                            >
+                                <Text className="text-xl text-center font-bold text-white uppercase">Gerar pagamento</Text>
+                            </TouchableOpacity>
+                        )}
+
+                        {/* Renderiza condicionalmente com base no statusAddingAmountToBalanceLoading */}
+                        {loading ? (
+                            <Text style={{ color: 'gray', textAlign: 'center', marginTop: 10 }}>Processando...</Text>
+                        ) : (
+                            <>
+                                {statusAddingAmountToBalance === "succeeded" && (
+                                    <Text style={{ color: 'green', textAlign: 'center', marginTop: 10 }}>Saldo adicionado com sucesso à conta.</Text>
+                                )}
+
+                                {statusAddingAmountToBalance === "failed" && (
+                                    <TouchableOpacity
+                                        onPress={handleAddAmountToBalance}
+                                        style={{ backgroundColor: 'blue', padding: 10, borderRadius: 5, marginTop: 10 }}
+                                    >
+                                        <Text style={{ color: 'white', textAlign: 'center' }}>Recarregar</Text>
+                                    </TouchableOpacity>
+                                )}
+                            </>
+                        )}
+                    </View>
+                </View>
+            </ScrollView>
+        </BasePage>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -71,4 +120,4 @@ const styles = StyleSheet.create({
         top: 0,
         height: 100,
     },
-})
+});

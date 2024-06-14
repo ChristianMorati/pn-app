@@ -1,23 +1,24 @@
-import { ActionReducerMapBuilder } from "@reduxjs/toolkit";
+import { ActionReducerMapBuilder, PayloadAction } from "@reduxjs/toolkit";
 import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IUserProps } from "../interfaces/IUserProps";
 import { loginAsync } from "../thunks";
+import { UserInfo } from "../initialState";
 
 const loginAsyncBuilder = (
     builder: ActionReducerMapBuilder<IUserProps>,
 ) => {
     builder
-        .addCase(loginAsync.fulfilled, (state, action) => {
-            const { access_token, ...user } = action.payload;
+        .addCase(loginAsync.fulfilled, (state, action: PayloadAction<UserInfo>) => {
 
-            state.access_token = access_token;
-            state.userInfo = user;
+            state.userInfo = action.payload;
 
             (async () => {
-                await AsyncStorage.setItem('@User', JSON.stringify(user));
-                await AsyncStorage.setItem('TOKEN', access_token);
+                await AsyncStorage.setItem('@User', JSON.stringify(action.payload));
+                await AsyncStorage.setItem('TOKEN', action.payload.access_token);
             })()
+
+            console.log(state.userInfo);
 
             state.loading = false;
             state.signedIn = true;

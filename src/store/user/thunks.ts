@@ -1,7 +1,9 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import instance from "../../axios";
+import { httpClient } from "../../services/http-client";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { UserInfo } from "./initialState";
 
-type userLogin = {
+type UserLogin = {
     username: string,
     password: string
 }
@@ -13,70 +15,59 @@ type userSignUp = {
     cpf?: string,
 }
 
-export type userSignedUp = {
-    data: {
-        id: number,
-        username: string,
-        name: string,
-        cpf: string,
-        access_token: string
-    }
-}
-
-export type userAuth = {
-    data: {
-        id: number,
-        username: string,
-        name: string,
-        cpf: string,
-        access_token: string
-    }
-}
-
 export const loginAsync = createAsyncThunk(
-    "login/user",
-    async (formData: any) => {
-        const response = await new Promise<any>(async (resolve, reject) => {
+    "login/signin",
+    async (formData: UserLogin) => {
+        const response = await new Promise<UserInfo>(async (resolve, reject) => {
+            const token = await AsyncStorage.getItem('TOKEN');
 
             try {
-                const responseData = await fetch(`http://192.168.1.41:3000/auth/signin`, {
-                    method: 'POST',
+                const responseData = await httpClient.request(`auth/signin`, {
+                    method: "POST",
+                    body: JSON.stringify(formData),
                     headers: {
                         'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
                     },
-                    body: JSON.stringify(formData),
                 });
 
-                if (!responseData.ok) {
-                    throw new Error('Network response was not ok');
+                if (!responseData) {
+                    reject('No response data');
+                } else {
+                    resolve(responseData);
                 }
-
-                const user = await responseData.json();
-                resolve({ data: user });
             } catch (error) {
-                console.log('Error during login:', error);
-                reject(undefined);
+                reject(error.message);
             }
-        })
-        return response.data;
+        });
+        return response;
     }
 )
 
 export const signUpAsync = createAsyncThunk(
-    "login/user",
+    "login/signup",
     async (formData: userSignUp) => {
-        const response = await new Promise<userSignedUp>(async (resolve, reject) => {
-            const responseData = await instance.post(`/auth/signup`, {
-                body: JSON.stringify(formData),
-            });
+        const response = await new Promise<UserInfo>(async (resolve, reject) => {
+            const token = await AsyncStorage.getItem('TOKEN');
+            try {
+                const responseData = await httpClient.request(`/auth/signup`, {
+                    method: "POST",
+                    body: JSON.stringify(formData),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
 
-            if (responseData.status !== 201) reject(undefined);
-
-            const user = responseData.data;
-            resolve({
-                data: { ...user }
-            });
-        })
-        return response.data;
+                if (!responseData) {
+                    reject('No response data');
+                } else {
+                    resolve(responseData);
+                }
+            } catch (error) {
+                reject(error.message);
+            }
+        });
+        return response;
     }
-)
+);

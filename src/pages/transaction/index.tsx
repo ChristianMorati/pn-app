@@ -15,10 +15,6 @@ export default function TransactionScreen({ navigation }) {
                         colors={[themeColors.primary, themeColors.secondary]}
                         style={[styles.background, { height: 380 }]}
                     />
-                    <Button
-                        title="B3bank"
-                        onPress={() => navigation.navigate('Home')}
-                    />
                     <PixKeySelector />
                 </View>
             </>

@@ -1,4 +1,5 @@
 export type TransactionItem = {
+    id: number,
     amount: number,
     payerUserId: number,
     payeePixKey: number,
@@ -9,12 +10,18 @@ export type TransactionItem = {
 
 export interface TransactionState {
     transaction: TransactionItem,
+    myTransactions: TransactionItem[],
     error: any,
     status: string | null;
+    loadMyTransactionsStatus: string | null;
+    loadMyTransactionsError: any;
 }
 
 export const initialState: TransactionState = {
     transaction: {} as TransactionItem,
+    myTransactions: [],
     error: null,
-    status: null
+    status: null,
+    loadMyTransactionsStatus: null,
+    loadMyTransactionsError: null,
 };

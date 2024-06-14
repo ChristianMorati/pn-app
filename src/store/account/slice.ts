@@ -6,8 +6,11 @@ export const accountReducer = createSlice({
     name: 'account',
     initialState,
     reducers: {
-        withdraw(state, action: PayloadAction<number>) {
+        deposit(state, action: PayloadAction<number>) {
             state.account.balance += action.payload;
+        },
+        withdraw(state, action: PayloadAction<number>) {
+            state.account.balance -= action.payload;
         },
     },
     extraReducers: (builder) => {

@@ -1,8 +1,7 @@
-import { User } from "../../../types/user";
+import { UserInfo } from "../initialState";
 
 export interface IUserProps {
     signedIn: boolean;
     loading: boolean;
-    userInfo: User;
-    access_token: string,
+    userInfo: UserInfo;
 }

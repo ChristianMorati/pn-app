@@ -1,3 +1,4 @@
+import Toast from "react-native-toast-message";
 
 const formatToCurrencyBRL = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -19,7 +20,18 @@ function formatToDateBRL(date: Date | string): string {
     }).format(dateObj);
 }
 
+function  showToast(type: 'success' | 'error', text: string) {
+    Toast.show({
+        type,
+        props: {
+            header: type === 'error' ? 'Ops...' : 'Sucesso!',
+            text
+        }
+    });
+};
+
 export {
     formatToCurrencyBRL,
-    formatToDateBRL
+    formatToDateBRL,
+    showToast
 }

@@ -1,14 +1,14 @@
 import { ActionReducerMapBuilder, PayloadAction } from "@reduxjs/toolkit";
 import { IUserProps } from "../interfaces/IUserProps";
-import { loginAsync } from "../thunks";
+import { signUpAsync } from "../thunks";
 import { UserInfo } from "../initialState";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const loginAsyncBuilder = (
+const signUpAsyncBuilder = (
     builder: ActionReducerMapBuilder<IUserProps>,
 ) => {
     builder
-        .addCase(loginAsync.fulfilled, (state, action: PayloadAction<UserInfo>) => {
+        .addCase(signUpAsync.fulfilled, (state, action: PayloadAction<UserInfo>) => {
             console.log(state.userInfo);
 
             state.userInfo = action.payload;
@@ -19,12 +19,12 @@ const loginAsyncBuilder = (
             state.loading = false;
             state.signedIn = true;
         })
-        .addCase(loginAsync.pending, (state, action) => {
+        .addCase(signUpAsync.pending, (state, action) => {
             state.loading = true;
         })
-        .addCase(loginAsync.rejected, (state, action) => {
+        .addCase(signUpAsync.rejected, (state, action) => {
             state.loading = false;
         })
 }
 
-export default loginAsyncBuilder;
+export default signUpAsyncBuilder;

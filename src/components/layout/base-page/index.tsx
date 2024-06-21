@@ -14,16 +14,16 @@ interface BasePageProps extends ViewProps {
     children?: ReactNode;
     nativeViewProps?: ViewProps;
     style?: StyleProps
-    usingBottomTabs?: boolean 
+    usingBottomTabs?: boolean
 }
 
 export function BasePage({ children, style, nativeViewProps, usingBottomTabs }: BasePageProps) {
     return (
-        <View style={[{ justifyContent: "flex-start", paddingTop: 32, gap: 10, height: '100%', backgroundColor: themeColors.basePage, ...style }]} {...nativeViewProps}>
+        <View style={[{ justifyContent: "flex-start", gap: 10, height: '100%', backgroundColor: themeColors.basePage, ...style }]} {...nativeViewProps}>
             <SafeAreaView>
                 <ScrollView>
                     {children}
-                    { usingBottomTabs && <ScapeFromBottomTab />}
+                    {usingBottomTabs && <ScapeFromBottomTab />}
                 </ScrollView>
             </SafeAreaView>
         </View>

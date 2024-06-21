@@ -8,12 +8,12 @@ export type PixKey = {
 export type AccountItem = {
     id: number;
     balance: number;
-    pixKeys?: PixKey[];
+    pixKeys: PixKey[];
 };
 
 export interface AccountState {
     account: AccountItem,
-    pixKeys: undefined,
+    pixKeys: null,
     error: any,
     statusAddingAmountToBalance: string | null;
     statusAddingAmountToBalanceLoading: boolean;
@@ -22,7 +22,7 @@ export interface AccountState {
 
 export const initialState: AccountState = {
     account: {} as AccountItem,
-    pixKeys: undefined,
+    pixKeys: null,
     error: null,
     status: null,
     statusAddingAmountToBalance: null,

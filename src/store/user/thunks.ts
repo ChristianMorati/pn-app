@@ -1,6 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { httpClient } from "../../services/http-client";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserInfo } from "./initialState";
 
 type UserLogin = {
@@ -8,7 +7,7 @@ type UserLogin = {
     password: string
 }
 
-type userSignUp = {
+type UserSignUp = {
     name: string,
     username: string,
     password: string,
@@ -16,58 +15,27 @@ type userSignUp = {
 }
 
 export const loginAsync = createAsyncThunk(
-    "login/signin",
+    "login/login",
     async (formData: UserLogin) => {
-        const response = await new Promise<UserInfo>(async (resolve, reject) => {
-            const token = await AsyncStorage.getItem('TOKEN');
-
-            try {
-                const responseData = await httpClient.request(`auth/signin`, {
-                    method: "POST",
-                    body: JSON.stringify(formData),
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (!responseData) {
-                    reject('No response data');
-                } else {
-                    resolve(responseData);
-                }
-            } catch (error) {
-                reject(error.message);
-            }
+        return await httpClient.request(`auth/signin`, {
+            method: "POST",
+            body: JSON.stringify(formData),
+            headers: {
+                'Content-Type': 'application/json',
+            },
         });
-        return response;
     }
-)
+);
 
 export const signUpAsync = createAsyncThunk(
     "login/signup",
-    async (formData: userSignUp) => {
-        const response = await new Promise<UserInfo>(async (resolve, reject) => {
-            const token = await AsyncStorage.getItem('TOKEN');
-            try {
-                const responseData = await httpClient.request(`/auth/signup`, {
-                    method: "POST",
-                    body: JSON.stringify(formData),
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (!responseData) {
-                    reject('No response data');
-                } else {
-                    resolve(responseData);
-                }
-            } catch (error) {
-                reject(error.message);
-            }
+    async (formData: UserSignUp) => {
+        return await httpClient.request(`auth/signup`, {
+            method: "POST",
+            body: JSON.stringify(formData),
+            headers: {
+                'Content-Type': 'application/json',
+            },
         });
-        return response;
     }
 );

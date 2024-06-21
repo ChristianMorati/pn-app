@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import loginAsyncBuilder from './builder/loginAsync';
-import { initialState } from './initialState';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserInfo, initialState } from './initialState';
 import { IUserProps } from './interfaces/IUserProps';
+import signUpAsyncBuilder from './builder/signUpAsync';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const userSlice = createSlice({
     name: 'user',
@@ -11,7 +12,7 @@ export const userSlice = createSlice({
         logOff(state: IUserProps) {
             AsyncStorage.clear();
             state.signedIn = false;
-            state.userInfo = {} as User;
+            state.userInfo = {} as UserInfo;
         },
         setSignedIn(state, action) {
             state.signedIn = action.payload;
@@ -22,5 +23,6 @@ export const userSlice = createSlice({
     },
     extraReducers: (builder) => {
         loginAsyncBuilder(builder);
+        signUpAsyncBuilder(builder);
     },
 });

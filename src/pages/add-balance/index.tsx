@@ -7,8 +7,9 @@ import { MoneyTextInput } from "../../components/commons/monetary-input";
 import { addBalanceToMyAccount } from "../../store/account/thunks";
 import { useAppDispatch } from "../../store/hooks/useAppDispatch";
 import { useAppSelector } from "../../store/hooks/useAppSelector";
+import { NavigationProps } from "../../router";
 
-export default function AddBalanceScreen({ navigation }) {
+export default function AddBalanceScreen({ route, navigation }: NavigationProps) {
     const [money, setMoney] = useState('');
     const [inputMoneyError, setInputMoneyError] = useState('');
     const [isReady, setIsReady] = useState(false);

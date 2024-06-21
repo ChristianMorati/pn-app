@@ -132,7 +132,7 @@ export default function PayWithQrCode() {
                                             {transactionSuccess}
                                         </Text>
                                         <Text style={{ color: themeColors.success }} className="text-xl font-semibold text-center">
-                                            V{modalInfo.amount}
+                                            {modalInfo.amount}
                                         </Text>
                                     </View>
                                 )}

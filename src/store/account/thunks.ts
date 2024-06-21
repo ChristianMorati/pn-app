@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import AsyncStorage from "@react-native-async-storage/async-storage"
 import { httpClient } from "../../services/http-client";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const loadMyAccountData = createAsyncThunk(
     'account/loadMyAccountData',
@@ -8,18 +8,16 @@ export const loadMyAccountData = createAsyncThunk(
         try {
             const token = await AsyncStorage.getItem('TOKEN');
             if (!token) {
-              throw new Error('Token not found');
+                throw new Error('Token not found');
             }
-        
+
             const user = await AsyncStorage.getItem('@User');
             if (!user) {
-              throw new Error('User data not found');
+                throw new Error('User data not found');
             }
-        
-            const userData = JSON.parse(user);
-            console.log(userData);
 
-            const userId = 1;
+            const userData = JSON.parse(user);
+
             const response = await httpClient.request(`account/${userData.user.id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -37,39 +35,6 @@ export const loadMyAccountData = createAsyncThunk(
         }
     }
 );
-
-type findUserByPixKeyParams = {
-    pixKey: string
-}
-
-export const findUserByPixKey = createAsyncThunk(
-    'account/loadMyAccountData',
-    async ({ pixKey }: findUserByPixKeyParams) => {
-        try {
-            const token = await AsyncStorage.getItem('TOKEN');
-            // const userId = await AsyncStorage.getItem('@user');
-            const pixKey = ""
-            const response = await httpClient.request(`user/pixKey/${pixKey}`, {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (!response.data) {
-                throw new Error('Failed to load user data');
-            }
-
-            console.log(response.data)
-
-            return response.data;
-        } catch (error) {
-            console.log('error')
-            return Promise.reject(error);
-        }
-    }
-);
-
 
 export const addBalanceToMyAccount = createAsyncThunk(
     'account/deposit',

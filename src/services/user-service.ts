@@ -3,23 +3,16 @@ import { httpClient } from "./http-client";
 
 class UserService {
     async findUserByPixKey(pixKey: string) {
-        try {
-            const token = await AsyncStorage.getItem('TOKEN');
-            // const userId = await AsyncStorage.getItem('@user');
-            const { userName } = await httpClient.request(`user/pixKey/${pixKey}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (!userName) {
-                throw new Error('Failed to load user data');
-            }
-
-            return userName;
-        } catch (error) {
-            return Promise.reject(error);
-        }
+        const token = await AsyncStorage.getItem('TOKEN');
+        // const userId = await AsyncStorage.getItem('@user');
+        return await httpClient.request(`user/pixKey`, {
+            method: 'POST',
+            body: JSON.stringify({ pixKey: pixKey }),
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
     }
 }
 

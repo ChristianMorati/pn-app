@@ -35,25 +35,19 @@ export default function MyAccount({ account, status, error, handleReload, naviga
         <>
             {status === 'succeeded' && account ? (
                 <>
-                    <LinearGradient
-                        colors={[themeColors.primary, themeColors.secondary]}
-                        style={[styles.background, { height: 300 }]}
-                    />
+                    <View className="flex flex-row justify-between items-center">
+                        <Text style={{ color: themeColors.color }} className="font-medium text-md">conta</Text>
+                        <TouchableOpacity
+                            className="flex flex-row justify-center items-center"
+                            onPress={() => { navigation.navigate("MyTransactions") }}
+                        >
+                            <Text style={{ color: themeColors.color }} className="font-medium text-md">ver extrato</Text>
+                            <Text><MaterialIcons name="arrow-forward-ios" size={14} color={themeColors.color} /></Text>
+                        </TouchableOpacity>
+                    </View>
                     <View>
-                        <View className="flex flex-row justify-between items-center">
-                            <Text style={{ color: themeColors.color }} className="font-medium text-md">conta</Text>
-                            <TouchableOpacity
-                                className="flex flex-row justify-center items-center"
-                                onPress={() => { navigation.navigate("MyTransactions") }}
-                            >
-                                <Text style={{ color: themeColors.color }} className="font-medium text-md">ver extrato</Text>
-                                <Text><MaterialIcons name="arrow-forward-ios" size={14} color={themeColors.color} /></Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View>
-                            <Text style={{ color: themeColors.color }} className="font-extralight text-xl">Saldo disponível</Text>
-                            <Text style={{ color: themeColors.success }} className="font-extralight text-4xl mt-2">{formatToCurrencyBRL(account.balance)}</Text>
-                        </View>
+                        <Text style={{ color: themeColors.color }} className="font-extralight text-xl">Saldo disponível</Text>
+                        <Text style={{ color: themeColors.success }} className="font-extralight text-4xl mt-2">{formatToCurrencyBRL(account.balance)}</Text>
                     </View>
                 </>
             ) : (

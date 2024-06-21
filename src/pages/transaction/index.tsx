@@ -1,23 +1,15 @@
 import React from "react"
-import { Button, View } from "react-native"
-import PixKeySelector from "../../components/commons/pix-key-selector"
-import { styles } from "../home/style"
-import { LinearGradient } from "expo-linear-gradient"
-import { themeColors } from "../../theme/colors"
 import { BasePage } from "../../components/layout/base-page"
+import PixKeyValidation from "../../components/commons/trasaction"
+import ContainerGradient from "../../components/layout/container-gradient"
+import { NavigationProps } from "../../router"
 
-export default function TransactionScreen({ navigation }) {
+export default function TransactionScreen({ route, navigation }: NavigationProps) {
     return (
-        <BasePage children={
-            <>
-                <View style={styles.containerColor} className="p-4 overflow-hidden rounded-xl mx-2">
-                    <LinearGradient
-                        colors={[themeColors.primary, themeColors.secondary]}
-                        style={[styles.background, { height: 380 }]}
-                    />
-                    <PixKeySelector />
-                </View>
-            </>
-        } />
+        <BasePage>
+            <ContainerGradient>
+                <PixKeyValidation />
+            </ContainerGradient>
+        </BasePage>
     )
 }

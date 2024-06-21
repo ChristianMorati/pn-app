@@ -9,10 +9,17 @@ import { styles } from "../home/style";
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesome6 } from '@expo/vector-icons';
 import { formatToCurrencyBRL, formatToDateBRL } from "../../utils";
+import { NavigationProps } from "../../router";
+import { PixKey } from "../../store/account/initialState";
+import RefundTransactionButton from "../../components/commons/refund-button";
+import ContainerGradient from "../../components/layout/container-gradient";
+import { PixKeyTypeEnum } from "../../store/unum/pix-key-type.enum";
 
-export default function MyTransactionsScreen({ navigation }) {
+
+export default function MyTransactionsScreen({ route, navigation }: NavigationProps) {
     const dispatch = useAppDispatch();
     const { myTransactions, loadMyTransactionsStatus, loadMyTransactionsError } = useAppSelector(store => store.transaction);
+    const { account } = useAppSelector(store => store.account);
 
     useEffect(() => {
         dispatch(loadMyTransactions());
@@ -45,41 +52,93 @@ export default function MyTransactionsScreen({ navigation }) {
 
             {loadMyTransactionsStatus === 'succeeded' && myTransactions && (
                 <BasePage style={{ backgroundColor: themeColors.primary }}>
-                    <View className="overflow-hidden">
-                        <Text style={{ color: themeColors.color }} className="p-4 pb-2 font-medium text-xl">Minhas Transações</Text>
+                    <View className="overflow-hidden w-full h-full pt-2">
                         <View
-                            className="flex pt-2 px-4 py-6 rounded-t-xl  overflow-hidden"
-                            style={styles.containerColor}
+                            className="px-1 overflow-hidden"
                         >
                             {myTransactions.length > 0 ? (
                                 <>
-                                    {myTransactions.map(transaction => (
-                                        <View
-                                            key={transaction.toString() + transaction.id}
-                                            className="flex pt-2 px-4 py-6 rounded-t-xl  overflow-hidden"
-                                            style={styles.containerColor}
-                                        >
-                                            <LinearGradient
-                                                colors={[themeColors.secondary, themeColors.primary]}
-                                                style={[styles.background, { height: 100 }]}
-                                            />
-                                            <Text className="font-bold text-right" style={{ color: themeColors.color }}>
-                                                {formatToDateBRL(transaction.date)}
-                                            </Text>
-
-                                            <View className="flex-row justify-between pt-2">
-                                                <Text className="font-semibold" style={{ color: transaction.payeePixKey ? themeColors.error : themeColors.success }}>{transaction.payeePixKey == null ? "Adição de Saldo" : "Transferência"}</Text>
-                                                {transaction.payeePixKey ? (
-                                                    <Text className="font-bold text-right" style={{ color: themeColors.error }}>
-                                                        <FontAwesome6 name="arrow-trend-down" size={12} />{` -${formatToCurrencyBRL(transaction.amount)}`}</Text>
-                                                ) : (
-                                                    <Text className="font-bold text-right" style={{ color: themeColors.success }}>
-                                                        <FontAwesome6 name="arrow-trend-up" size={12} />{` +${formatToCurrencyBRL(transaction.amount)}`}
+                                    {myTransactions.map(transaction => {
+                                        const keys: PixKey[] = account.pixKeys || [];
+                                        const isAdd = keys.some((pixKey: PixKey) => pixKey.value === transaction.payeePixKey);
+                                        return (
+                                            <View
+                                                key={transaction.toString() + transaction.id}
+                                                className="flex rounded-t-xl  overflow-hidden"
+                                                style={styles.containerColor}
+                                            >
+                                                <ContainerGradient tailwindRoundedClass="rounded-b-xl">
+                                                    <Text className="font-bold text-right" style={{ color: themeColors.color }}>
+                                                        {formatToDateBRL(transaction.date)}
                                                     </Text>
-                                                )}
+                                                    <Text className="font-bold text-right" style={{ color: themeColors.color }}>
+                                                        {isAdd && transaction.type == 'refund' ? "Foi extornada" : null}
+                                                    </Text>
+                                                    <View className="flex-row justify-start py-4">
+                                                        {isAdd && transaction.type == 'transaction' && (
+                                                            <RefundTransactionButton
+                                                                buttonText={"Devolver"}
+                                                                transaction={transaction}
+                                                            />
+                                                        )}
+                                                    </View>
+                                                    <View className="flex-row justify-between pt-2">
+                                                        {account.id == transaction.accountId && transaction.type == 'refund' && (
+                                                            <>
+                                                                <Text
+                                                                    className="font-semibold"
+                                                                    style={{ color: themeColors.success }}>
+                                                                    O destinatário extornou
+                                                                </Text>
+                                                                <Text className="font-bold text-right" style={{ color: themeColors.success }}>
+                                                                    <FontAwesome6 name="arrow-trend-up" size={12} />{` +${formatToCurrencyBRL(transaction.amount)}`}
+                                                                </Text>
+                                                            </>
+                                                        )}
+
+                                                        {isAdd && transaction.type == 'refund' && (
+                                                            <>
+                                                                <Text
+                                                                    className="font-semibold"
+                                                                    style={{ color: themeColors.success }}>
+                                                                    Você extornou
+                                                                </Text>
+                                                                <Text className="font-bold text-right" style={{ color: themeColors.success }}>
+                                                                    <FontAwesome6 name="arrow-trend-up" size={12} />{` +${formatToCurrencyBRL(transaction.amount)}`}
+                                                                </Text>
+                                                            </>
+                                                        )}
+
+                                                        {isAdd && transaction.type == 'transaction' && (
+                                                            <>
+                                                                <Text
+                                                                    className="font-semibold"
+                                                                    style={{ color: themeColors.success }}>
+                                                                    Recebido
+                                                                </Text>
+                                                                <Text className="font-bold text-right" style={{ color: themeColors.success }}>
+                                                                    <FontAwesome6 name="arrow-trend-down" size={12} />{` +${formatToCurrencyBRL(transaction.amount)}`}
+                                                                </Text>
+                                                            </>
+                                                        )}
+
+                                                        {!isAdd && transaction.type == 'transaction' && (
+                                                            <>
+                                                                <Text
+                                                                    className="font-semibold"
+                                                                    style={{ color: themeColors.error }}>
+                                                                    Transferência
+                                                                </Text>
+                                                                <Text className="font-bold text-right" style={{ color: themeColors.error }}>
+                                                                    <FontAwesome6 name="arrow-trend-down" size={12} />{` -${formatToCurrencyBRL(transaction.amount)}`}
+                                                                </Text>
+                                                            </>
+                                                        )}
+                                                    </View>
+                                                </ContainerGradient>
                                             </View>
-                                        </View>
-                                    ))}
+                                        )
+                                    })}
                                 </>
                             ) : (
                                 <View
@@ -94,9 +153,10 @@ export default function MyTransactionsScreen({ navigation }) {
                                 </View>
                             )}
                         </View>
-                    </View>
-                </BasePage>
-            )}
+                    </View >
+                </BasePage >
+            )
+            }
         </>
     );
 };

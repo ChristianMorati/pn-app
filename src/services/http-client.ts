@@ -21,7 +21,7 @@ class HttpClient implements IHttpClient {
     async request(url: string, options = {}): Promise<any> {
         try {
             const res = await http("http://192.168.1.41:3000/" + url, options);
-            const responseObj = this.extractData(res);
+            const responseObj = await this.extractData(res);
             return responseObj;
         } catch (error) {
             console.error(error);

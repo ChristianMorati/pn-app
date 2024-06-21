@@ -1,11 +1,15 @@
+import { PixKeyTypeEnum } from "../unum/pix-key-type.enum";
+
 export type TransactionItem = {
     id: number,
     amount: number,
     payerUserId: number,
-    payeePixKey: number,
+    payeePixKey: string,
+    payeePixKeyType: PixKeyTypeEnum,
     accountId: number,
     date: Date,
-    success: boolean
+    type: string,
+    success?: boolean
 }
 
 export interface TransactionState {

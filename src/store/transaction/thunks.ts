@@ -1,15 +1,18 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import AsyncStorage from "@react-native-async-storage/async-storage"
 import { httpClient } from "../../services/http-client";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { PixKeyTypeEnum } from "../unum/pix-key-type.enum";
+import { TransactionItem } from "./initialState";
 
 type createTransactionParams = {
     amount: number,
-    payeePixKey: string
+    payeePixKey: string,
+    payeePixKeyType: string
 }
 
 export const createTransaction = createAsyncThunk(
     'transaction/create',
-    async ({ amount, payeePixKey }: createTransactionParams, { rejectWithValue }) => {
+    async ({ amount, payeePixKey, payeePixKeyType }: createTransactionParams, { rejectWithValue }) => {
         try {
             const token = await AsyncStorage.getItem('TOKEN');
             if (!token) {
@@ -28,11 +31,12 @@ export const createTransaction = createAsyncThunk(
                 body: JSON.stringify({
                     amount: amount,
                     payerUserId: userData.user.id,
-                    payeePixKey
+                    payeePixKey,
+                    payeePixKeyType
                 }),
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
                 },
             });
 
@@ -42,22 +46,53 @@ export const createTransaction = createAsyncThunk(
 
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue(error);
+        }
+    }
+);
+
+export const refundTransaction = createAsyncThunk(
+    'transaction/refund',
+    async (transaction: TransactionItem, { rejectWithValue }) => {
+        try {
+            const token = await AsyncStorage.getItem('TOKEN');
+            if (!token) {
+                throw new Error('Token not found');
+            }
+
+            const response = await httpClient.request(`transaction/refund`, {
+                method: "POST",
+                body: JSON.stringify(transaction),
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            console.log(response);
+
+            if (!response.success) {
+                throw new Error('Failed to create transaction');
+            }
+
+            return response;
+        } catch (error) {
+            return rejectWithValue(error);
         }
     }
 );
 
 export const loadMyTransactions = createAsyncThunk(
     'transaction/allByAccountId',
-    async (_, { getState }) => {
-        const { account } = getState().account;
+    async (_, { getState }: any) => {
+        const { account } = getState()?.account;
 
         try {
-            const token = await AsyncStorage.getItem('TOKEN');
+            console.log("loadMyTransactions: ", account)
             const response = await httpClient.request(`transaction/all/${account.id}`, {
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
                 },
             });
 

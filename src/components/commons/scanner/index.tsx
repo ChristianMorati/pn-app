@@ -1,6 +1,7 @@
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
+import { themeColors } from '../../../theme/colors';
 
 export type HandleBarCodeScanned = ({ type, data }: { type: string, data: string }) => void
 
@@ -22,9 +23,11 @@ export default function QRCodeScanner({ handleBarCodeScanned, setScanned, scanne
   if (!permission.granted) {
     // Camera permissions are not granted yet.
     return (
-      <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
+      <View style={[styles.container, {
+          backgroundColor: themeColors.basePage,
+        }]}>
+        <Text style={[styles.text, { textAlign: 'center' }]}>Para este recurso precisamos de acesso á sua câmera</Text>
+        <Button onPress={requestPermission} title="definir permissão" />
       </View>
     );
   }
@@ -59,6 +62,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    gap: 8,
   },
   camera: {
     flex: 1,
@@ -75,8 +79,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: 'white',
+    color: themeColors.color,
   },
 });

@@ -13,6 +13,7 @@ type createTransactionParams = {
 export const createTransaction = createAsyncThunk(
     'transaction/create',
     async ({ amount, payeePixKey, payeePixKeyType }: createTransactionParams, { rejectWithValue }) => {
+        var response;
         try {
             const token = await AsyncStorage.getItem('TOKEN');
             if (!token) {
@@ -26,13 +27,13 @@ export const createTransaction = createAsyncThunk(
 
             const userData = JSON.parse(user);
 
-            const response = await httpClient.request(`transaction`, {
+            response = await httpClient.request(`transaction`, {
                 method: "POST",
                 body: JSON.stringify({
                     amount: amount,
                     payerUserId: userData.user.id,
-                    payeePixKey,
-                    payeePixKeyType
+                    payeePixKey: payeePixKey,
+                    payeePixKeyType: payeePixKeyType
                 }),
                 credentials: 'include',
                 headers: {
@@ -46,7 +47,7 @@ export const createTransaction = createAsyncThunk(
 
             return response;
         } catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue(null);
         }
     }
 );
@@ -54,22 +55,20 @@ export const createTransaction = createAsyncThunk(
 export const refundTransaction = createAsyncThunk(
     'transaction/refund',
     async (transaction: TransactionItem, { rejectWithValue }) => {
+        var response;
         try {
             const token = await AsyncStorage.getItem('TOKEN');
             if (!token) {
                 throw new Error('Token not found');
             }
 
-            const response = await httpClient.request(`transaction/refund`, {
+            response = await httpClient.request(`transaction/refund`, {
                 method: "POST",
                 body: JSON.stringify(transaction),
-                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 },
             });
-
-            console.log(response);
 
             if (!response.success) {
                 throw new Error('Failed to create transaction');
@@ -77,7 +76,7 @@ export const refundTransaction = createAsyncThunk(
 
             return response;
         } catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue(null);
         }
     }
 );
@@ -88,7 +87,6 @@ export const loadMyTransactions = createAsyncThunk(
         const { account } = getState()?.account;
 
         try {
-            console.log("loadMyTransactions: ", account)
             const response = await httpClient.request(`transaction/all/${account.id}`, {
                 credentials: 'include',
                 headers: {

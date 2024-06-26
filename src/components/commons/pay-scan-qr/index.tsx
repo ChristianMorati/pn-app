@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Dimensions, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, Text, TouchableOpacity, View } from "react-native";
 import QRCodeScanner, { HandleBarCodeScanned } from "../scanner";
 import Modal from 'react-native-modal';
 import { createTransaction } from "../../../store/transaction/thunks";
@@ -9,10 +9,17 @@ import { withdraw } from "../../../store/account/actions";
 import { LinearGradient } from "expo-linear-gradient";
 import { themeColors } from "../../../theme/colors";
 import { gradientStyle } from "../../../theme";
-import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import colors from "tailwindcss/colors";
-import { formatToCurrencyBRL } from "../../../utils";
+import { formatToCurrencyBRL, showToast } from "../../../utils";
+
+type PayWithQrCodeData = {
+    payerUserId: number
+    amount: number
+    payeePixKey: string
+    payeeName: string
+    payeePixKeyType: string
+}
 
 export default function PayWithQrCode() {
     const [scanned, setScanned] = useState(false);
@@ -20,8 +27,9 @@ export default function PayWithQrCode() {
     const [modalInfo, setModalInfo] = useState({
         payeeName: '',
         amount: 0,
-        payerUserId: '',
+        payerUserId: 0,
         payeePixKey: '',
+        payeePixKeyType: '',
         modalVisible: false
     });
     const [transactionSuccess, setTransactionSuccess] = useState('');
@@ -31,22 +39,17 @@ export default function PayWithQrCode() {
     const { account } = useAppSelector(store => store.account);
     const dispatch = useAppDispatch();
 
-    type PayWithQrCodeData = {
-        amount: number
-        payeePixKey: string
-        payeeName: string
-    }
-
     const handleBarCodeScanned: HandleBarCodeScanned = async ({ type, data }) => {
         resetMessages();
         setScanned(true);
         const payWithQrCodeData: PayWithQrCodeData = JSON.parse(data);
-        const { amount, payeePixKey, payeeName } = payWithQrCodeData
+        const { amount, payeePixKey, payeeName, payeePixKeyType } = payWithQrCodeData
 
         setModalInfo({
             payerUserId: userInfo.id,
             amount: amount,
             payeePixKey: payeePixKey,
+            payeePixKeyType: payeePixKeyType,
             payeeName: payeeName,
             modalVisible: true
         });
@@ -63,13 +66,15 @@ export default function PayWithQrCode() {
 
     const handleSubmit = async () => {
         if (account.balance < modalInfo.amount) {
-            throw new Error("Saldo insuficiente!.");
+            hideModal();
+            return showToast('error', 'Saldo insuficiente!');
         }
 
         try {
             const transaction: any = await dispatch(createTransaction({
                 amount: modalInfo.amount,
-                payeePixKey: modalInfo.payeePixKey
+                payeePixKey: modalInfo.payeePixKey,
+                payeePixKeyType: modalInfo.payeePixKeyType,
             }));
 
             if (transaction.error) {
@@ -77,9 +82,10 @@ export default function PayWithQrCode() {
             }
 
             dispatch(withdraw(transaction.payload.amount));
-            setTransactionSuccess('Transação efetuada com sucesso!');
+            showToast('success', 'Transação efetuada com sucesso!');
         } catch (error) {
-            setTransactionError('Erro ao efetuar a transação.');
+            hideModal();
+            showToast('error', 'Erro ao efetuar a transação.');
         }
         resetComponent();
     };
@@ -93,8 +99,9 @@ export default function PayWithQrCode() {
         setModalInfo({
             payeeName: '',
             amount: 0,
-            payerUserId: '',
+            payerUserId: 0,
             payeePixKey: '',
+            payeePixKeyType: '',
             modalVisible: false
         });
         setScanned(false);
@@ -114,7 +121,7 @@ export default function PayWithQrCode() {
                         scanned={scanned}
                         setScanned={setScanned}
                     />
-                    <View className="flex absolute top-0 z-10 justify-center items-center w-[100%] h-[100%]"
+                    <View className="flex absolute top-0 justify-center items-center w-[100%] h-[100%]"
                         style={{ backgroundColor: 'rgba(0,0,0,.3)' }}
                     >
                         {transactionError || transactionSuccess ? (

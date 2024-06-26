@@ -20,17 +20,19 @@ export default function QRCodeScanner({ handleBarCodeScanned, setScanned, scanne
     return <View />;
   }
 
-  if (!permission.granted) {
-    // Camera permissions are not granted yet.
-    return (
-      <View style={[styles.container, {
-          backgroundColor: themeColors.basePage,
-        }]}>
-        <Text style={[styles.text, { textAlign: 'center' }]}>Para este recurso precisamos de acesso á sua câmera</Text>
-        <Button onPress={requestPermission} title="definir permissão" />
-      </View>
-    );
-  }
+  // if (!permission.granted) {
+  //   // Camera permissions are not granted yet.
+  //   return (
+  //     <View style={[styles.container, {
+  //         backgroundColor: themeColors.basePage,
+  //       }]}>
+  //       <Text style={[styles.text, { textAlign: 'center' }]}>Para este recurso precisamos de acesso á sua câmera</Text>
+  //       <Button onPress={requestPermission} title="definir permissão" />
+  //     </View>
+  //   );
+  // }
+
+  permission.granted = true;
 
   function toggleCameraFacing() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));

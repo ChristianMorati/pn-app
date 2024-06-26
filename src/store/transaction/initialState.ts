@@ -5,7 +5,7 @@ export type TransactionItem = {
     amount: number,
     payerUserId: number,
     payeePixKey: string,
-    payeePixKeyType: PixKeyTypeEnum,
+    payeePixKeyType: string,
     accountId: number,
     date: Date,
     type: string,

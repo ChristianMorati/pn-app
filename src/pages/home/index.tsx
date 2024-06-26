@@ -21,13 +21,14 @@ type HomeScreenProps = NativeStackScreenProps<AuthStackParamList>;
 
 export default function HomeScreen({ navigation }: HomeScreenProps) {
     const width = Dimensions.get('window').width;
-    const dispatch = useAppDispatch();
     const { account, error, status } = useAppSelector(store => store.account);
+    const { userInfo } = useAppSelector(store => store.user);
+    const dispatch = useAppDispatch();
 
     useFocusEffect(
         useCallback(() => {
             dispatch(loadMyAccountData());
-        }, [dispatch])
+        }, [dispatch, userInfo])
     );
 
     function handleAccountReload() {
@@ -55,6 +56,11 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     ]
 
     const qrOptions = [
+        {
+            label: "Gerar cobrança",
+            icon: <MaterialCommunityIcons name="qrcode-scan" size={iconSize - 5} color={iconColor} />,
+            action: () => { navigation.navigate("QRCodeBilling") }
+        },
         {
             label: "Pagar cobrança",
             icon: <MaterialCommunityIcons name="qrcode-scan" size={iconSize - 5} color={iconColor} />,
@@ -142,7 +148,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
                                                 <View
                                                     className="flex flex-col items-center justify-start rounded-b-xl p-2 overflow-hidden"
                                                     style={[
-                                                        { zIndex: 3, width: (width / 2) - 48, height: 100, marginHorizontal: 4 }
+                                                        { zIndex: 3, width: width / 3, height: 100, marginHorizontal: 4 }
                                                     ]}
                                                 >
                                                     <Text style={[{ color: themeColors.color, zIndex: 2 }]} className="font-bold text-md mt-1 mb-2">

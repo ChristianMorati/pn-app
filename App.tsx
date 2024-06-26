@@ -7,11 +7,13 @@ import { ToasterDark } from './src/components/layout/toaster';
 
 function App() {
   return (
-    <Provider store={store}>
-      <RootNavigator />
-      <ExpoStatusBar backgroundColor={"black"}/>
+    <>
+      <Provider store={store}>
+        <RootNavigator />
+        <ExpoStatusBar backgroundColor={"black"} />
+      </Provider>
       <ToasterDark />
-    </Provider>
+    </>
   );
 }
 

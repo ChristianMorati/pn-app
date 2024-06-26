@@ -9,8 +9,6 @@ const signUpAsyncBuilder = (
 ) => {
     builder
         .addCase(signUpAsync.fulfilled, (state, action: PayloadAction<UserInfo>) => {
-            console.log(state.userInfo);
-
             state.userInfo = action.payload;
 
             AsyncStorage.setItem('@User', JSON.stringify(action.payload));

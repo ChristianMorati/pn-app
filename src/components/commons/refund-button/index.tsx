@@ -6,23 +6,31 @@ import { refundTransaction } from "../../../store/transaction/thunks";
 import { withdraw } from "../../../store/account/actions";
 import { themeColors } from "../../../theme/colors";
 import { TransactionItem } from "../../../store/transaction/initialState";
+import { changeTypeOfTransactionToRefund } from "../../../store/transaction/actions";
 
 type RefundTransactionButtonProps = {
     transaction: TransactionItem
     buttonText: string
 }
 
-export default function RefundTransactionButton({ transaction, buttonText, ...props }: RefundTransactionButtonProps) {
+const RefundTransactionButton: React.FC<RefundTransactionButtonProps> = ({
+    transaction,
+    buttonText,
+    ...props
+}) => {
     const dispatch = useAppDispatch();
 
     const handleRefundTransaction = () => {
-        dispatch(refundTransaction(transaction)).then((data) => {
-            dispatch(withdraw(transaction.amount));
-            showToast('success', 'devolvido!');
-        }).catch(() => {
-            showToast('error', 'Sua chave?');
-        });
-    }
+        dispatch(refundTransaction(transaction))
+            .then(() => {
+                dispatch(withdraw(transaction.amount));
+                dispatch(changeTypeOfTransactionToRefund(transaction))
+                showToast('success', 'Devolvido!')
+            })
+            .catch(() => {
+                showToast('error', 'Falha na devolução :( !')
+            });
+    };
 
     return (
         <>
@@ -37,3 +45,5 @@ export default function RefundTransactionButton({ transaction, buttonText, ...pr
         </>
     );
 }
+
+export default RefundTransactionButton;

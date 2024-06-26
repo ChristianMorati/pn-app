@@ -20,7 +20,7 @@ interface IHttpClient {
 class HttpClient implements IHttpClient {
     async request(url: string, options = {}): Promise<any> {
         try {
-            const res = await http("http://192.168.1.41:3000/" + url, options);
+            const res = await http(process.env.BASE_URL + "/" + url, options);
             const responseObj = await this.extractData(res);
             return responseObj;
         } catch (error) {

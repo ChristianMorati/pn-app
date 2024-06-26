@@ -4,6 +4,9 @@ import { useAppDispatch } from '../../store/hooks/useAppDispatch';
 import { signUpAsync } from '../../store/user/thunks';
 import { useNavigation } from '@react-navigation/native';
 import Input from '../../components/commons/trasaction/input';
+import { showToast } from '../../utils';
+import { themeColors } from '../../theme/colors';
+import colors from 'tailwindcss/colors';
 
 // Função para validar email
 const validateEmail = (email: string): boolean => {
@@ -85,16 +88,19 @@ const SignUp: React.FC = () => {
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         setIsSubmitting(true);
         const cleanedCpf = cpf.replace(/\D/g, '');
 
-        dispatch(signUpAsync({ username: email, password, name, cpf: cleanedCpf })).then((data) => {
-        }).catch((e) => {
-            
-        });
-
-        setIsSubmitting(false);
+        try {
+            const userData = await dispatch(signUpAsync({ username: email, password, name, cpf: cleanedCpf })).unwrap()
+            console.log("signUpAsync");
+            console.log(userData);
+        } catch (e) {
+            showToast('error', 'verifique as crendenciais e tente novamente!');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     interface TipProps {
@@ -111,7 +117,11 @@ const SignUp: React.FC = () => {
 
     return (
         <View>
-            <Text style={styles.title}>Cadastro</Text>
+            <Text
+                className="text-2xl mb-4"
+                style={{ color: themeColors.color }}>
+                Criar conta
+            </Text>
             <View style={styles.progressContainer}>
                 <View style={styles.stepContainer}>
                     <View style={[styles.step, step === 1 ? styles.activeStep : styles.inactiveStep]}>
@@ -190,7 +200,6 @@ const SignUp: React.FC = () => {
                     </View>
                 </View>
             )}
-            {success && <View style={styles.successContainer}><Text style={styles.successText}>{success}</Text></View>}
         </View>
     );
 };
@@ -199,7 +208,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         marginBottom: 16,
-        color: '#FFFFFF',
+        color: themeColors.color,
     },
     progressContainer: {
         flexDirection: 'row',
@@ -217,65 +226,56 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#64748B',
+        backgroundColor: themeColors.basePage,
     },
     activeStep: {
-        backgroundColor: '#F97316',
+        backgroundColor: themeColors.error,
     },
     inactiveStep: {
-        backgroundColor: '#64748B',
+        backgroundColor: themeColors.basePage,
     },
     stepText: {
-        color: '#FFFFFF',
+        color: themeColors.color,
     },
     progressLine: {
         height: 2,
         flexGrow: 1,
-        backgroundColor: '#64748B',
+        backgroundColor: themeColors.basePage,
     },
     activeLine: {
-        backgroundColor: '#F97316',
+        backgroundColor: themeColors.error,
     },
     inactiveLine: {
-        backgroundColor: '#64748B',
+        backgroundColor: themeColors.basePage,
     },
     inputContainer: {
         marginBottom: 24,
     },
     button: {
-        paddingVertical: 8,
-        paddingHorizontal: 16,
+        paddingVertical: 14,
+        paddingHorizontal: 20,
         borderRadius: 4,
         marginTop: 16,
     },
     buttonEnabled: {
-        backgroundColor: '#F97316',
+        backgroundColor: themeColors.error,
     },
     buttonDisabled: {
-        backgroundColor: '#64748B',
+        backgroundColor: themeColors.basePage,
+        borderWidth: .3,
+        borderColor: themeColors.color,
     },
     buttonText: {
-        color: '#FFFFFF',
+        color: themeColors.color,
         fontWeight: 'bold',
         textAlign: 'center',
     },
     backButton: {
-        backgroundColor: '#64748B',
-        marginRight: 8,
+        backgroundColor: themeColors.secondary,
     },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-    },
-    successContainer: {
-        padding: 8,
-        backgroundColor: '#10B981',
-        marginTop: 8,
-    },
-    successText: {
-        color: '#D1FAE5',
-        fontWeight: 'bold',
-        textAlign: 'center',
     },
     tip: {
         fontSize: 12,

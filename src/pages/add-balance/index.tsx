@@ -8,6 +8,7 @@ import { addBalanceToMyAccount } from "../../store/account/thunks";
 import { useAppDispatch } from "../../store/hooks/useAppDispatch";
 import { useAppSelector } from "../../store/hooks/useAppSelector";
 import { NavigationProps } from "../../router";
+import { formatToCurrencyBRL, showToast } from "../../utils";
 
 export default function AddBalanceScreen({ route, navigation }: NavigationProps) {
     const [money, setMoney] = useState('');
@@ -45,11 +46,14 @@ export default function AddBalanceScreen({ route, navigation }: NavigationProps)
 
         try {
             dispatch(addBalanceToMyAccount(amount));
+            showToast('success', `Foi adicionado ${formatToCurrencyBRL(amount)} na sua conta.`)
         } catch (error) {
-            console.log(error);
+            showToast('error', `Falha ao depositar.`)
         } finally {
             setLoading(false);
         }
+        setMoney('');
+        setIsReady(false);
     }
 
     useEffect(() => {
@@ -76,10 +80,11 @@ export default function AddBalanceScreen({ route, navigation }: NavigationProps)
                         />
                         {isReady && (
                             <TouchableOpacity
-                                className="bg-red-300 p-4 rounded-md"
+                                className="p-4 rounded-md"
+                                style={{ backgroundColor: themeColors.success }}
                                 onPress={handleAddAmountToBalance}
                             >
-                                <Text className="text-xl text-center font-bold text-white uppercase">Gerar pagamento</Text>
+                                <Text className="text-xl text-center font-bold text-white uppercase">depositar</Text>
                             </TouchableOpacity>
                         )}
 

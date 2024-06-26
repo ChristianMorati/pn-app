@@ -12,7 +12,7 @@ export default function QRCodeBillingScreen({ route, navigation }: NavigationPro
             <ContainerGradient>
                 <QRCodeBilling
                     accountId={account.id}
-                    pixKey={account.pixKeys[0].value}
+                    pixKey={account.pixKeys[0]}
                 />
             </ContainerGradient>
         </BasePage>

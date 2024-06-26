@@ -13,7 +13,6 @@ import { NavigationProps } from "../../router";
 import { PixKey } from "../../store/account/initialState";
 import RefundTransactionButton from "../../components/commons/refund-button";
 import ContainerGradient from "../../components/layout/container-gradient";
-import { PixKeyTypeEnum } from "../../store/unum/pix-key-type.enum";
 
 
 export default function MyTransactionsScreen({ route, navigation }: NavigationProps) {
@@ -26,7 +25,6 @@ export default function MyTransactionsScreen({ route, navigation }: NavigationPr
     }, [dispatch]);
 
     useEffect(() => {
-        console.log('Transaction status:', loadMyTransactionsStatus);
     }, [loadMyTransactionsStatus]);
 
     function handleReload() {
@@ -83,6 +81,18 @@ export default function MyTransactionsScreen({ route, navigation }: NavigationPr
                                                         )}
                                                     </View>
                                                     <View className="flex-row justify-between pt-2">
+                                                        {transaction.type == 'deposit' && (
+                                                            <>
+                                                                <Text
+                                                                    className="font-semibold"
+                                                                    style={{ color: themeColors.success }}>
+                                                                    Depósito
+                                                                </Text>
+                                                                <Text className="font-bold text-right" style={{ color: themeColors.success }}>
+                                                                    <FontAwesome6 name="arrow-trend-up" size={12} />{` +${formatToCurrencyBRL(transaction.amount)}`}
+                                                                </Text>
+                                                            </>
+                                                        )}
                                                         {account.id == transaction.accountId && transaction.type == 'refund' && (
                                                             <>
                                                                 <Text
@@ -100,11 +110,11 @@ export default function MyTransactionsScreen({ route, navigation }: NavigationPr
                                                             <>
                                                                 <Text
                                                                     className="font-semibold"
-                                                                    style={{ color: themeColors.success }}>
+                                                                    style={{ color: themeColors.error }}>
                                                                     Você extornou
                                                                 </Text>
-                                                                <Text className="font-bold text-right" style={{ color: themeColors.success }}>
-                                                                    <FontAwesome6 name="arrow-trend-up" size={12} />{` +${formatToCurrencyBRL(transaction.amount)}`}
+                                                                <Text className="font-bold text-right" style={{ color: themeColors.error }}>
+                                                                    <FontAwesome6 name="arrow-trend-down" size={12} />{` -${formatToCurrencyBRL(transaction.amount)}`}
                                                                 </Text>
                                                             </>
                                                         )}

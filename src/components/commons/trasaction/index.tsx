@@ -41,7 +41,6 @@ const PixKeyValidation: React.FC = () => {
 
     const dispatch = useAppDispatch();
     const { account } = useAppSelector((store) => store.account);
-    const { userInfo } = useAppSelector((store) => store.user);
 
     const handlePixKeyChange = (key: string) => {
         const validKeys: PixKeyType[] = keys.filter(({ regex }) => regex.test(key)).map(({ type }) => type);
@@ -54,14 +53,14 @@ const PixKeyValidation: React.FC = () => {
         const selectedType: PixKeyType = type as PixKeyType;
         setPixKey({ ...pixKey, type: selectedType });
 
-        if (isSameUserPixKey(pixKey.value || '')) {
+        if (isSameUserPixKey(pixKey.value || "")) {
             return showToast('error', 'Sua chave?');
         }
 
         if (validKeys!.length >= 1 && selectedType && pixKey.value) {
-            fetch("http://192.168.1.41:3000/user/pixKey", {
+            fetch(process.env.BASE_URL + "/user/pixKey", {
                 method: 'POST',
-                body: JSON.stringify({ pixKey: pixKey.value, type: selectedType }),
+                body: JSON.stringify({ value: pixKey.value, type: selectedType }),
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -100,15 +99,11 @@ const PixKeyValidation: React.FC = () => {
     };
 
     const isSameUserPixKey = (payeePixKey: string): boolean => {
-        return account.pixKeys.some(pixKey => pixKey.value === payeePixKey);
+        return account.pixKeys.some(pixKey => pixKey.value.toLocaleLowerCase() === payeePixKey.toLocaleLowerCase());
     }
 
     const handleSubmit = async () => {
         if (isValidAmount(amount) && pixKey.type && pixKey.value) {
-            if (!Object.values(PixKeyTypeEnum).includes(pixKey.type)) {
-                return showToast('error', 'Tipo de chave Pix inválido!');
-            }
-
             const parsedAmount = convertToFloat(amount);
 
             try {
@@ -140,7 +135,6 @@ const PixKeyValidation: React.FC = () => {
             showToast('error', 'O valor mínimo é de R$ 0,50.');
         }
     };
-
 
     const handleBack = () => {
         if (step > 1) {

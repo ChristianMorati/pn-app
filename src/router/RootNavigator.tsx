@@ -40,10 +40,9 @@ export const RootNavigator = () => {
             }
 
             setUserInfo(userData);
-            console.log(userData);
             dispatch(setSignedIn(true));
         } catch (error) {
-            console.error(error);
+           
         } finally {
             setIsLoading(false);
         }
@@ -52,14 +51,6 @@ export const RootNavigator = () => {
     useEffect(() => {
         checkIfIsAuthtenticated();
     }, []);
-
-    if (isLoading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={themeColors.success} />
-            </View>
-        );
-    }
 
     return (
         <NavigationContainer>

@@ -1,7 +1,6 @@
 import colors from "tailwindcss/colors";
 
-const color = 'neutral';
-// const color = 'slate';
+const color = 'slate';
 const secondary = color;
 const primary = color;
 

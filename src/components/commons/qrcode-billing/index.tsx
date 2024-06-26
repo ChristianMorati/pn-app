@@ -1,78 +1,15 @@
 import React, { useState } from 'react';
 import Input from '../trasaction/input';
-import { View, Text, Button, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import QRCodeGenerator from '../qrcode-generator';
 import { TransactionItem } from '../../../store/transaction/initialState';
 import Toast from 'react-native-toast-message';
+import { PixKey } from '../../../store/account/initialState';
 
 interface QRCodeBillingProps {
     accountId: number;
-    pixKey: string;
+    pixKey: PixKey;
 }
-
-// toastConfig.js
-import { StyleSheet } from 'react-native';
-import { BaseToast, ErrorToast } from 'react-native-toast-message';
-import { ToasterDark } from '../../layout/toaster';
-import { useAppSelector } from '../../../store/hooks/useAppSelector';
-
-export const toastConfig = {
-    success: (props) => (
-        <BaseToast
-            {...props}
-            style={styles.successToast}
-            contentContainerStyle={styles.toastContent}
-            text1Style={styles.text1}
-            text2Style={styles.text2}
-        />
-    ),
-    error: (props) => (
-        <ErrorToast
-            {...props}
-            style={styles.errorToast}
-            contentContainerStyle={styles.toastContent}
-            text1Style={styles.text1}
-            text2Style={styles.text2}
-        />
-    ),
-    info: (props) => (
-        <BaseToast
-            {...props}
-            style={styles.infoToast}
-            contentContainerStyle={styles.toastContent}
-            text1Style={styles.text1}
-            text2Style={styles.text2}
-        />
-    ),
-};
-
-const styles = StyleSheet.create({
-    successToast: {
-        borderLeftColor: 'green',
-        backgroundColor: '#333',
-    },
-    errorToast: {
-        borderLeftColor: 'red',
-        backgroundColor: '#333',
-    },
-    infoToast: {
-        borderLeftColor: 'blue',
-        backgroundColor: '#333',
-    },
-    toastContent: {
-        paddingHorizontal: 15,
-    },
-    text1: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#fff',
-    },
-    text2: {
-        fontSize: 14,
-        color: '#fff',
-    },
-});
-
 
 const QRCodeBilling: React.FC<QRCodeBillingProps> = ({ accountId, pixKey }) => {
     const [qrValue, setQrValue] = useState('');
@@ -103,7 +40,8 @@ const QRCodeBilling: React.FC<QRCodeBillingProps> = ({ accountId, pixKey }) => {
             const billing: Partial<TransactionItem> = {
                 amount: parseFloat(amount.replace(/\./g, '').replace(',', '.').replace('R$', '')),
                 accountId,
-                payeePixKey: pixKey,
+                payeePixKey: pixKey.value,
+                payeePixKeyType: pixKey.type
             };
             setQrValue(JSON.stringify(billing));
             setConfirmed(true);

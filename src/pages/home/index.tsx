@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Dimensions, KeyboardAvoidingView, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { themeColors } from "../../theme/colors";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -16,6 +16,8 @@ import ContainerGradient from "../../components/layout/container-gradient";
 import { MaterialIcons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "../../router";
+import { transactionObservable } from "../../sse";
+import { TransactionObservable } from "../../sse/transaction";
 
 type HomeScreenProps = NativeStackScreenProps<AuthStackParamList>;
 
@@ -24,6 +26,15 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     const { account, error, status } = useAppSelector(store => store.account);
     const { userInfo } = useAppSelector(store => store.user);
     const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (userInfo.user.id) {
+            const transactionObservable = new TransactionObservable({ userId: userInfo.user.id });
+            transactionObservable.listenToIncomingTransaction();
+        }
+
+        return () => transactionObservable.stopListeningToIncomingTransaction();
+    }, [userInfo]);
 
     useFocusEffect(
         useCallback(() => {

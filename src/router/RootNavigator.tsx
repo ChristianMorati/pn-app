@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import AuthRouter from "./AuthRouter";
-import LoginScreen from "../pages/auth";
 import { ActivityIndicator, View, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setSignedIn, setUserInfo } from "../store/user/actions";
 import { useAppSelector } from "../store/hooks/useAppSelector";
 import { useAppDispatch } from "../store/hooks/useAppDispatch";
-import { checkAccessTokenValidation, updateTokens } from "../services/jwt";
+import { updateTokens } from "../services/jwt";
 import { themeColors } from "../theme/colors";
-import AuthScreen from "../pages/auth";
 import { NavigationContainer } from "@react-navigation/native";
 import NonAuthRouter from "./NonAuthRouter";
 
@@ -39,10 +37,12 @@ export const RootNavigator = () => {
                 throw new Error("falha ao atualizar tokens");
             }
 
-            setUserInfo(userData);
+            console.log(userData);
+
+            dispatch(setUserInfo({...userData}));
             dispatch(setSignedIn(true));
         } catch (error) {
-           
+
         } finally {
             setIsLoading(false);
         }

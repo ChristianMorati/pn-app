@@ -1,16 +1,15 @@
-// App.jsx
 import { Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 const toastConfig = {
-    success: ({ props }) => (
+    success: ({ props }: any) => (
         <View className='w-full absolute z-50 top-0 p-4 border-green-400 bg-slate-950 border-y-2 border-spacing-1'>
             <Text style={{ fontSize: 18 }} className='text-white font-bold'>{props.header}</Text>
             <Text style={{ fontSize: 16 }} className='text-white font-semibold'>{props.text}</Text>
         </View>
     ),
 
-    error: ({ props }) => (
+    error: ({ props }: any) => (
         <View className='w-full absolute z-50 top-0 p-4 border-red-400 bg-slate-950 border-x-2 border-spacing-1'>
             <Text style={{ fontSize: 18 }} className='text-white font-bold'>{props.header}</Text>
             <Text style={{ fontSize: 16 }} className='text-white font-semibold'>{props.text}</Text>

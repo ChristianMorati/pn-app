@@ -20,15 +20,23 @@ function formatToDateBRL(date: Date | string): string {
     }).format(dateObj);
 }
 
-function  showToast(type: 'success' | 'error', text: string) {
+
+export type ToastProps = {
+    header?: string;
+    text: string;
+}
+
+function showToast(type: 'success' | 'error', toastBody: ToastProps | string) {
+    const defaultHeader = type === 'error' ? 'Ops...' : 'Sucesso!';
+
     Toast.show({
         type,
         props: {
-            header: type === 'error' ? 'Ops...' : 'Sucesso!',
-            text
+            header: typeof toastBody === "object" ? toastBody.header : defaultHeader,
+            text: typeof toastBody === "object" ? toastBody.text : toastBody
         }
     });
-};
+}
 
 export {
     formatToCurrencyBRL,

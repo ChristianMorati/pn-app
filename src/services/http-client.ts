@@ -12,6 +12,8 @@ const extractJson = (res: any) => {
 //     return res.data;
 // }
 
+const BASE_URL_API = process.env.BASE_URL;
+
 interface IHttpClient {
     request(url: string, options?: RequestInit): Promise<any>;
     extractData(res: Response): any;
@@ -20,7 +22,7 @@ interface IHttpClient {
 class HttpClient implements IHttpClient {
     async request(url: string, options = {}): Promise<any> {
         try {
-            const res = await http(process.env.BASE_URL + "/" + url, options);
+            const res = await http(BASE_URL_API + "/" + url, options);
             const responseObj = await this.extractData(res);
             return responseObj;
         } catch (error) {
@@ -35,4 +37,4 @@ class HttpClient implements IHttpClient {
 }
 
 const httpClient = new HttpClient();
-export { httpClient }
+export { httpClient, BASE_URL_API }

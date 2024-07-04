@@ -1,8 +1,6 @@
-import { LinearGradient } from "expo-linear-gradient";
 import { TouchableOpacity } from "react-native";
 import { View } from "react-native";
 import { themeColors } from "../../../theme/colors";
-import { styles } from "../../../pages/home/style";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useNavigation } from "@react-navigation/native";
 
@@ -12,13 +10,9 @@ export default function BottomTabs() {
     const iconColor = themeColors.color;
     return (
         <View
-            style={{ backgroundColor: themeColors.basePage }}
+            style={{ backgroundColor: themeColors.primary }}
             className="absolute justify-evenly items-center bottom-0 py-4 p-2 w-[100%] flex flex-row overflow-hidden"
         >
-            <LinearGradient
-                colors={[themeColors.primary, themeColors.secondary]}
-                style={[styles.background, { height: 50 }]}
-            />
             <TouchableOpacity onPress={() => navigation.navigate("Home")}>
                 <FontAwesome6 name="house" size={iconSize} color={iconColor} />
             </TouchableOpacity>

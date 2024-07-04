@@ -28,13 +28,19 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (userInfo.user.id) {
-            const transactionObservable = new TransactionObservable({ userId: userInfo.user.id });
+        var transactionObservable: TransactionObservable;
+
+        if (userInfo.user.username) {
+            transactionObservable = new TransactionObservable({ userId: userInfo.user.id });
             transactionObservable.listenToIncomingTransaction();
         }
 
-        return () => transactionObservable.stopListeningToIncomingTransaction();
-    }, [userInfo]);
+        return () => {
+            if (transactionObservable) {
+                transactionObservable.stopListeningToIncomingTransaction();
+            }
+        };
+    }, []);
 
     useFocusEffect(
         useCallback(() => {

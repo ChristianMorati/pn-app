@@ -3,7 +3,7 @@ import { store } from "../../store";
 import { deposit } from "../../store/account/actions";
 import { addTransaction } from "../../store/transaction/actions";
 import { TransactionItem } from "../../store/transaction/initialState";
-import { formatToCurrencyBRL, showToast } from "../../utils";
+import { formatToCurrencyBRL, showToast, toCapipitalize } from "../../utils";
 import SocketIoInit from "../socket";
 import { TransactionEventsEnum } from "../../enum/transaction-events.enum";
 
@@ -22,20 +22,36 @@ export class TransactionObservable extends SocketIoInit {
         });
     }
 
+    private isMoneyBackTransaction(transaction: TransactionItem) {
+        return transaction.payerUserId === this.userId && transaction.type === "refund";
+    }
+
+    private isMoneyAdditionTransaction(transaction: TransactionItem) {
+        return transaction.payerUserId !== this.userId && transaction.type === "transaction";
+    }
+
     listenToIncomingTransaction() {
         if (this.transactionListener) {
             this.socket.off('transaction', this.transactionListener);
         }
 
         this.transactionListener = (data: any) => {
-            const transaction: TransactionItem = data.transaction;
-            store.dispatch(deposit(transaction.amount));
-            store.dispatch(addTransaction(transaction));
-            console.log(data);
-            showToast('success', {
-                header: 'Pix recebido!',
-                text: formatToCurrencyBRL(transaction.amount) + ' foi adicionado!'
-            });
+            const { transaction, payerName }: { transaction: TransactionItem, payerName: string } = data;
+
+            // money returned or money received
+            if (this.isMoneyBackTransaction(transaction) || this.isMoneyAdditionTransaction(transaction)) {
+                const isTransaction = transaction.type == "transaction";
+                const header = isTransaction ? "Pix recebido!" : "Extorno";
+                const text = isTransaction ? "Enviou" : "Extornou";
+
+                store.dispatch(deposit(transaction.amount));
+                store.dispatch(addTransaction(transaction));
+
+                showToast('success', {
+                    header: header,
+                    text: `${toCapipitalize(payerName)} ${text} ${formatToCurrencyBRL(transaction.amount)}!`
+                });
+            }
         };
 
         this.socket.on(TransactionEventsEnum.TRANSACTION, this.transactionListener);

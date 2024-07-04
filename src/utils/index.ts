@@ -38,8 +38,13 @@ function showToast(type: 'success' | 'error', toastBody: ToastProps | string) {
     });
 }
 
+function toCapipitalize(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+}
+
 export {
     formatToCurrencyBRL,
     formatToDateBRL,
-    showToast
+    showToast,
+    toCapipitalize,
 }
